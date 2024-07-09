@@ -9,7 +9,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<Home />} />
-          <Route path="/module/:id" element={<Module />} />
+          <Route path="/modules/:id" element={<Module />} />
         </Routes>
       </BrowserRouter>
     </div>

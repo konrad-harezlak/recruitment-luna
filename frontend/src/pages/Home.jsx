@@ -15,7 +15,6 @@ const Home = () => {
   };
 
   const handleModuleSubmit = (id) => {
-    console.log('works?',id)
     navigate(`/modules/${id}`)
   };
 
@@ -31,8 +30,8 @@ const Home = () => {
           onClick={()=>handleModuleSubmit(el.id)}
         >
           <p>Module name: {el.name}</p>
-          <p>Is available: {el.available ? "True" : "False"}</p>
-          <p>Target temperature:{el.targetTemperature}</p>
+          <p>Available: {el.available ? "True" : "False"}</p>
+          <p>Temperature:{el.targetTemperature}</p>
         </div>
       ))}
     </div>
