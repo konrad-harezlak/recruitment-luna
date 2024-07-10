@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate} from "react-router-dom";
 import api from "../api/api";
+import '../assets/styles/home.scss';
 
 const Home = () => {
   const [modules, setModules] = useState([]);
@@ -29,9 +30,9 @@ const Home = () => {
           key={el.id}
           onClick={()=>handleModuleSubmit(el.id)}
         >
-          <p>Module name: {el.name}</p>
-          <p>Available: {el.available ? "True" : "False"}</p>
-          <p>Temperature:{el.targetTemperature}</p>
+          <p><b>Module name:</b> {el.name}</p>
+          <p><b>Available:</b> {el.available ? "True" : "False"}</p>
+          <p><b>Temperature:</b> {el.targetTemperature}</p>
         </div>
       ))}
     </div>

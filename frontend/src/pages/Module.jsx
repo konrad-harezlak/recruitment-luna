@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../api/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import "../assets/styles/module.scss";
 
 const Module = () => {
   const { id } = useParams();
@@ -31,10 +32,16 @@ const Module = () => {
     <div className="module-container">
       {module ? (
         <div className="module-container__information">
-          <p>Name: {module.name}</p>
-          <p>Description: {module.description}</p>
-          <p>Available: {module.available ? "True" : "False"}</p>
-          <p>Temperature: {module.targetTemperature}</p>
+          <h1>{module.name}</h1>
+          <p>
+            <b>Description:</b> {module.description}
+          </p>
+          <p>
+            <b>Available:</b> {module.available ? "True" : "False"}
+          </p>
+          <p>
+            <b>Temperature:</b> {module.targetTemperature}
+          </p>
         </div>
       ) : (
         <p>Loading...</p>
@@ -46,7 +53,9 @@ const Module = () => {
         <p className="edit-container__warning">{warningMessage}</p>
       </div>
       <div className="module-container__return-button">
-        <FontAwesomeIcon icon={faArrowLeft}  size="3x"/>
+        <Link to="/">
+          <FontAwesomeIcon icon={faArrowLeft} size="3x" />
+        </Link>
       </div>
     </div>
   );
