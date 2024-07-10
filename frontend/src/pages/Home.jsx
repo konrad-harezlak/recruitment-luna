@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate} from "react-router-dom";
 import api from "../api/api";
 import '../assets/styles/home.scss';
+import io from "socket.io-client";
 
 const Home = () => {
+  const socket = io("localhost:3001", {
+    transports: ["websocket"],
+  });
+  
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
   const fetchModules = async () => {
