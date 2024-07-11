@@ -6,6 +6,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal";
 import "../assets/styles/module.scss";
 import io from "socket.io-client";
+import HistoricalChart from "../components/HistoricalChart";
 
 const Module = () => {
   const [temperature, setTemperature] = useState();
@@ -98,14 +99,24 @@ const Module = () => {
           <FontAwesomeIcon icon={faArrowLeft} size="3x" />
         </Link>
       </div>
-      <Modal
-        show={modalOpen}
-        id={id}
-        close={() => {
-          setModalOpen(false);
-          fetchModule();
-        }}
-      />
+      {module && module.available && (
+        <>
+          <div className="module-container__return-button">
+            <Link to="/">
+              <FontAwesomeIcon icon={faArrowLeft} size="3x" />
+            </Link>
+          </div>
+          <Modal
+            show={modalOpen}
+            id={id}
+            close={() => {
+              setModalOpen(false);
+              fetchModule();
+            }}
+          />
+          <HistoricalChart />
+        </>
+      )}
     </div>
   );
 };
