@@ -5,8 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal";
 import "../assets/styles/module.scss";
+import io from "socket.io-client";
 
 const Module = () => {
+  const [temperature, setTemperature] = useState();
   const { id } = useParams();
   const [module, setModule] = useState();
   const [warningMessage, setWarningMessage] = useState("");
@@ -31,6 +33,22 @@ const Module = () => {
       setWarningMessage("");
     }
   }, [module]);
+
+  useEffect(() => {
+    const socket = io("localhost:3001", {
+      transports: ["websocket"],
+    });
+    socket.on("connection", () => {
+      console.log("connected to socket io");
+    });
+    socket.on("moduleUpdate", (data) => {
+      let obj = data.find((el) => el.id === id);
+      if (obj) setTemperature(obj.temperature);
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   return (
     <div className="module-container">
       {module ? (
@@ -43,14 +61,34 @@ const Module = () => {
             <b>Available:</b> {module.available ? "True" : "False"}
           </p>
           <p>
-            <b>Temperature:</b> {module.targetTemperature}
+            <b>Target temperature:</b> {module.targetTemperature}
+          </p>
+          <p>
+            <b>Temperature:</b>{" "}
+            <span
+              style={{
+                color:
+                  temperature === undefined
+                    ? "black"
+                    : (temperature - module.targetTemperature)>0.5 || (temperature - module.targetTemperature) <-0.5
+                    ? "green"
+                    : "red"
+              }}
+              
+            >
+              {temperature ? temperature : "N/A"}
+            </span>
           </p>
         </div>
       ) : (
         <p>Loading...</p>
       )}
       <div className="module-container__edit-container">
-        <button id="edit-button" className="edit-container_button" onClick={()=>setModalOpen(true)}>
+        <button
+          id="edit-button"
+          className="edit-container_button"
+          onClick={() => setModalOpen(true)}
+        >
           Edit
         </button>
         <p className="edit-container__warning">{warningMessage}</p>
@@ -61,9 +99,12 @@ const Module = () => {
         </Link>
       </div>
       <Modal
-      show={modalOpen}
-      id={id}
-      close={() => {setModalOpen(false); fetchModule()}}
+        show={modalOpen}
+        id={id}
+        close={() => {
+          setModalOpen(false);
+          fetchModule();
+        }}
       />
     </div>
   );
