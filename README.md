@@ -1,120 +1,78 @@
-# Zadanie rekrutacyjne
+# Opis Projektu
 
-- Napisz aplikację do zarządzania modułami IoT, wykonującymi pomiary parametrów wody w hodowli akwaponicznej
-- Sprawdzana będzie głównie funkcjonalność i jakość kodu aplikacji, a estetyka aplikacji będzie dodatkowo uwzględniana
-- Kod backendu aplikacji wraz z instrukcją uruchomienia znajduje się w katalogu [backend](./backend/)
-- Aplikację należy stworzyć w ReactJS
+## Przegląd
 
-## Zadania do wykonania:
+Ten projekt to pełnostackowa aplikacja zaprojektowana do zarządzania i monitorowania modułów z czujnikami temperatury. Wykorzystuje React do frontend'u oraz backend na Node.js z Socket.IO do aktualizacji w czasie rzeczywistym.
 
-### 1. Strona listy modułów
+## Frontend (React)
 
-- Jest to strona główna aplikacji, na niej mają być wyświetlane wszystkie dostępne moduły w postaci listy wraz z ich parametrami
-- Lista modułów zwracana jest przez endpoint `GET /modules`,
+### Komponenty
 
-Przykładowy format danych w odpowiedzi zapytania `GET /modules`:
+#### Komponent Home (Home.js)
 
-```json
-[
-  {
-    "id": "string",
-    "name": "string",
-    "targetTemperature": 15.0,
-    "available": true
-  },
-  {
-    ...
-  }
-]
+- Wyświetla listę modułów z ich bieżącymi i docelowymi temperaturami.
+- Wykorzystuje Socket.IO do aktualizacji temperatury w czasie rzeczywistym.
+- Kliknięcie na moduł przekierowuje do jego szczegółów.
+
+#### Komponent Module (Module.js)
+
+- Pokazuje szczegółowe informacje o wybranym module.
+- Umożliwia edycję szczegółów modułu, takich jak nazwa, opis i docelowa temperatura.
+- Zawiera komponent wykresu historycznego (HistoricalChart.js) do wizualizacji danych - temperaturowych.
+
+#### Komponent Historical Chart (HistoricalChart.js)
+
+- Wyświetla historyczne dane temperaturowe dla modułu.
+- Wspiera wybór zakresu dat i trybu wyświetlania (godzinowy/dzienny).
+
+#### Komponent Modal (Modal.js)
+
+- Dostarcza formularz do edycji szczegółów modułu.
+- Wykonuje walidację po stronie klienta dla takich danych jak zakres temperatur.
+
+## Dodatkowe Funkcje
+
+### Potencjalne Ulepszenia
+
+- Autoryzacja Użytkownika: Implementacja logowania użytkownika i kontroli dostępu na podstawie ról w celu zabezpieczenia tras i działań.
+- Filtrowanie Danych: Pozwolenie użytkownikom na filtrowanie modułów na podstawie dostępności, zakresu temperatur itp.
+- Alerty i Powiadomienia: Wysyłanie alertów, gdy przekroczone zostaną progi temperatur za pomocą emaili lub powiadomień w aplikacji.
+- Eksport Danych: Możliwość eksportowania danych historycznych jako raporty CSV lub PDF.
+- Lokalizacja: Wsparcie dla wielu języków dla międzynarodowych użytkowników.
+
+## Instrukcje Instalacji
+
+### Sklonowanie Repozytorium
+
+```bash
+git clone <repository_url>
+cd <project_directory>
 ```
 
-- Parametry modułu, które należy wyświetlić to:
-  - `name` - nazwa
-  - `available` - dostępność modułu
-  - `targetTemperature` - temperatura docelowa $[\degree C]$
+### Instalacja Zależności
 
-### 2. Strona szczegółów modułu
-
-- Po kliknięciu odpowiedniej pozycji w liście wszystkich modułów, należy przenieść użytkownika na stronę szczegółów wybranego modułu
-- Dane modułu należy pobrać przez endpoint `GET \modules\:id`
-- Strona powinna zawierać przycisk umożliwiający edytowanie danego modułu (opis w kolejnym zadaniu)
-- Jeżeli moduł jest niedostępny (parametr `available`), należy zablokować możliwość edycji modułu i dodać informację o braku jego dostępności
-- Należy dodać możliwość powrotu do strony głównej
-
-Przykładowe dane odpowiedzi zapytania `GET /modules/:id`:
-
-```json
-{
-  "id": "0a0f77eb1-50a0-4d98-8116-064fc5a84693",
-  "name": "Hydroponic module 1",
-  "description": "Lorem ipsum dolor sit amet ...",
-  "available": true,
-  "targetTemperature": 10
-}
+```bash
+npm install
 ```
 
-- Parametry modułu, które należy wyświetlić to:
-  - `name` - nazwa
-  - `description` - opis
-  - `available` - dostępność modułu
-  - `targetTemperature` - temperatura docelowa $[\degree C]$
+### Uruchomienie Backend'u (Zakładając konfigurację backend'u na Node.js)
 
-### 3. Możliwość edycji modułu
-
-- Na stronie szczegółów modułu należy dodać modal/dialog, otwierany po naciśnięciu przycisku edycji, który pozwoli użytkownikowi na zmianę parametrów modułu
-- Możliwa jest edycja następujących pól:
-  - `name`
-  - `description`
-  - `targetTemperature`
-- Należy dokonać walidacji pól przed wysłaniem ich do api, według zasad:
-  - `name` - ciąg znaków, nie pusty
-  - `description` - ciąg znaków nie pusty
-  - `targetTemperature` - liczba, między 0 a 40
-- Do edycji służy endpoint `PATCH /modules/:id`
-
-### 4. Wyświetlanie aktualnej wartości temperatury
-
-- Na stronach listy modułów oraz szczegółów modułu razem z pozostałymi parametrami należy wyświetlać aktualną temperaturę wody, zmierzoną przez dany moduł
-- Temperaturę można pobrać z serwera WebSocket pod adresem `localhost:3001`
-- Do komunikacji przez WebSocket wykorzystaj paczkę npm [socket.io-client](https://www.npmjs.com/package/socket.io-client)
-- Wyświetlana temperatura ma być aktualizowana w czasie rzeczywistym w momencie otrzymania wiadomości od serwera WebSocket
-- Jeżeli temperatura mieści się w zakresie $\pm 0.5 \degree C$ wartości `targetTemperature` należy ją wyświetlać w kolorze zielonym, w przeciwnym przypadku w kolorze czerwonym
-
-Fragment kodu do utworzenia połączenia z serwerem:
-
-```typescript
-const socket = io("localhost:3001", {
-  transports: ["websocket"],
-});
+```bash
+npm start
 ```
 
-### 5. Wyświetlanie danych historycznych temperatury
+### Uruchomienie Frontend'u (React)
 
-- Na stronie szczegółów modułu należy dodać wykres lub/i tabelę z możliwością przeglądania danych historycznych dla modułu
-- Dane historyczne można pobrać przez endpoint `GET /modules/:id/history` z parametrami zapytania `start`, `stop` i `mode`
-- Parametry `start` i `stop` powinny być w formacie ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ), a dozwolone wartości `mode` to "hourly" lub "daily"
-
-Przykładowe dane odpowiedzi zapytania `GET /modules/:id/history`:
-
-```json
-[
-  {
-    "timestamp": "2024-06-01T00:00:00.000Z",
-    "temperature": 19.5
-  },
-  {
-    "timestamp": "2024-06-01T01:00:00.000Z",
-    "temperature": 19.8
-  },
-  ...
-]
+```bash
+cd frontend
+npm install
+npm start
 ```
 
-- Na wykresie lub w tabeli należy wyświetlić temperatury w czasie, umożliwiając użytkownikowi wybór zakresu czasowego oraz trybu ("hourly" lub "daily"
-)
+### Dostęp do Aplikacji
+Otwórz http://localhost:3000 w swojej przeglądarce internetowej.
 
-### 6. Dodatkowe elementy
-
-- Opis w README
-- Testy jednostkowe/komponentów
-- Pole na twoją kreatywność - jeśli uważasz, że coś warto według ciebie dodać do zadania
+## Notatki Dotyczące Rozwoju
+- Upewnij się, że Node.js i npm są zainstalowane na twoim systemie.
+- Endpointy API backend'u (/modules, /modules/:id, /modules/:id/history) powinny być poprawnie zaimplementowane i dostępne.
+- Konfiguracja Socket.IO (localhost:3001) powinna być skonfigurowana i uruchomiona, aby odbierać aktualizacje w czasie rzeczywistym.
